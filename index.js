@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 
 const connectDB = require('./configs/connectDB');
 const userController = require('./controllers/userController');
@@ -6,6 +7,7 @@ const productController = require('./controllers/productController');
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 const port = process.env.PORT || 8000;
 connectDB();
@@ -22,7 +24,7 @@ app.post('/user/register', async (req, res) => {
         });
     }
     else {
-        res.status(400).send({
+        res.send({
             success: false,
             message: result.message
         });
@@ -40,7 +42,7 @@ app.post('/user/login', async (req, res) => {
         })
     }
     else {
-        res.status(400).send({
+        res.send({
             success: false,
             message: result.message
         })
