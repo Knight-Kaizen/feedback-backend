@@ -105,7 +105,89 @@ const getProducts = async(query, userSort)=>{
     }
 }
 
+const addLike = async(productObj)=>{
+    const {productId} = productObj;
+        try{
+            const result = await productDetailsCollection.updateOne(
+                { _id: productId },
+                { 
+                    $inc: { likes: 1 }
+                }
+            )
+            return({
+                success: true,
+                message: 'like added'
+            })
+        }
+        catch(err){
+            console.log('error in adding like');
+            return({
+                success: false,
+                message: 'Error in adding like, try again'
+            })
+        }
+}
+
+const addComment = async(productObj)=>{
+    const { productId, comment} = productObj;
+    
+        try{
+            console.log('checking product id', productId);
+            const result = await productDetailsCollection.updateOne(
+                { _id: productId },
+                { 
+                    $inc: { total_comments: 1 },
+                    $push: { comments: comment}
+                }
+            )
+            console.log('checking result of add comment', result);
+            return({
+                success: true,
+                message: 'Comment added'
+            });
+        }
+        catch(err){
+            console.log('error in adding comment', err);
+            return({
+                success: false,
+                message: 'Failed to add comment'
+            })
+        }
+    
+
+}
+
+const editProductDetails = async(productObj)=>{
+    const {token, productId,product_name, logo_url, product_link, product_description, product_category } = productObj;
+    const tokenVerification = await verifyToken(token);
+    if(tokenVerification.success){
+        await productDetailsCollection.updateOne({ _id: productId }, {
+            $set: {
+                product_name,
+                logo_url,
+                product_link,
+                product_description,
+                product_category
+            }
+        })
+        return ({
+            success: true,
+            message: 'Product details updated'
+        })
+    }
+    else{
+        return({
+            success: false,
+            message: tokenVerification.message
+        });
+    }
+
+}
+
 module.exports = {
     addProduct,
-    getProducts
+    getProducts,
+    addComment,
+    addLike,
+    editProductDetails
 }

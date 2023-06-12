@@ -12,16 +12,16 @@ connectDB();
 
 app.get('/', (req, res) => res.send('Backend working'));
 
-app.post('/user/register', async (req, res)=>{
-    const {registerUser} = userController;
-    const result  = await registerUser(req.body);
-    if(result.success){
+app.post('/user/register', async (req, res) => {
+    const { registerUser } = userController;
+    const result = await registerUser(req.body);
+    if (result.success) {
         res.send({
             success: true,
             message: result.message
         });
     }
-    else{
+    else {
         res.status(400).send({
             success: false,
             message: result.message
@@ -30,16 +30,16 @@ app.post('/user/register', async (req, res)=>{
 
 })
 
-app.post('/user/login', async(req, res)=>{
-    const {loginUser} = userController;
+app.post('/user/login', async (req, res) => {
+    const { loginUser } = userController;
     const result = await loginUser(req.body);
-    if(result.success){
+    if (result.success) {
         res.send({
             success: true,
             token: result.token
         })
     }
-    else{
+    else {
         res.status(400).send({
             success: false,
             message: result.message
@@ -47,23 +47,23 @@ app.post('/user/login', async(req, res)=>{
     }
 })
 
-app.post('/product/add', async (req, res)=>{
+app.post('/product/add', async (req, res) => {
     let token = req.headers.authorization;
-    const {product_name, logo_url, product_link, product_description, product_category} = req.body;
+    const { product_name, logo_url, product_link, product_description, product_category } = req.body;
 
-    const {addProduct} = productController;
+    const { addProduct } = productController;
 
     const result = await addProduct({
         token, product_name, logo_url, product_link, product_description, product_category
     });
     console.log(result);
-    if(result.success){
+    if (result.success) {
         res.send({
             success: true,
             message: result.message
         });
     }
-    else{
+    else {
         res.send({
             success: false,
             message: result.message
@@ -71,18 +71,18 @@ app.post('/product/add', async (req, res)=>{
     }
 })
 
-app.get('/product/view', async(req, res)=>{
-    const {sort, product_category} = req.query;
-    const {getProducts} = productController;
+app.get('/product/view', async (req, res) => {
+    const { sort, product_category } = req.query;
+    const { getProducts } = productController;
 
     const result = await getProducts(product_category, sort);
-    if(result.success){
+    if (result.success) {
         res.send({
             success: true,
             data: result.data
         });
     }
-    else{
+    else {
         res.status(400).send({
             success: false,
             message: result.message
@@ -90,19 +90,61 @@ app.get('/product/view', async(req, res)=>{
     }
 })
 
-app.patch('/product/comment/:id', async(req, res)=>{
+app.patch('/product/comment/:id', async (req, res) => {
     const productId = req.params.id;
-    res.send('hit');
+    const comment = req.body.comment;
+    const { addComment } = productController;
+
+    const result = await addComment({ productId, comment });
+    if (result.success) {
+        res.send({
+            success: true,
+            message: result.message
+        });
+    }
+    else {
+        res.status(400).send({
+            success: false,
+            message: result.message
+        });
+    }
 })
 
-app.patch('/product/like/:id', async(req, res)=>{
+app.patch('/product/like/:id', async (req, res) => {
     const productId = req.params.id;
-    res.send('hit');
+    const { addLike } = productController;
+    const result = await addLike({ productId });
+    if (result.success) {
+        res.send({
+            success: true,
+            message: result.message
+        })
+    } else {
+        res.status(400).send({
+            success: false,
+            message: result.message
+        })
+    }
 })
 
-app.patch('/product/edit/:id', async(req, res)=>{
+app.patch('/product/edit/:id', async (req, res) => {
     const productId = req.params.id;
-    res.send('hit');
+    const token = req.headers.authorization;
+    const { product_name, logo_url, product_link, product_description, product_category } = req.body;
+    const {editProductDetails} = productController;
+
+    const result = await editProductDetails({token, productId,product_name, logo_url, product_link, product_description, product_category });
+    if (result.success) {
+        res.send({
+            success: true,
+            message: result.message
+        })
+    } else {
+        res.status(400).send({
+            success: false,
+            message: result.message
+        })
+    }
 })
 
 app.listen(port, () => {
