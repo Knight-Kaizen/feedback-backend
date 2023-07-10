@@ -90,7 +90,7 @@ router.patch('/product/like/:id', async (req, res) => {
             message: result.message
         })
     } else {
-        res.status(400).send({
+        res.status(400).json({
             success: false,
             message: result.message
         })
@@ -110,7 +110,7 @@ router.patch('/product/edit/:id', async (req, res) => {
             message: result.message
         })
     } else {
-        res.status(400).send({
+        res.status(400).json({
             success: false,
             message: result.message
         })

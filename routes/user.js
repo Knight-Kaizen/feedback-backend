@@ -60,7 +60,7 @@ async (req, res) => {
         })
     }
     else {
-        res.status(400).send({
+        res.status(400).json({
             success: false,
             message: result.message
         })
